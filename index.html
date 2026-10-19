@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legacy Lucy | Haven Built Media</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E4968; --rose:#DBB3B3; --slate:#8A99AB; --warm:#F3F1F0; --white:#FFFFFF;
+  --muted:var(--slate); --border:rgba(46,73,104,0.22);
+}
+*{box-sizing:border-box;}
+body{font-family:'Montserrat',sans-serif; background:var(--navy); color:var(--navy); margin:0; padding:0 16px 40px; min-height:100vh; display:flex; align-items:flex-start; justify-content:center;}
+.page{width:100%; max-width:640px;}
+.masthead{display:flex; align-items:center; gap:14px; padding:22px 4px 18px; color:var(--white);}
+.masthead img{width:58px; height:58px; flex-shrink:0;}
+.mast-kicker{font-size:11px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--rose);}
+.mast-title{font-size:20px; font-weight:900; text-transform:uppercase; letter-spacing:.04em;}
+.card{background:var(--white); border-radius:16px; width:100%; overflow:hidden; margin-bottom:24px;}
+.inner{padding:28px 22px 36px; text-align:center;}
+
+h1{font-weight:900; text-transform:uppercase; font-size:22px; letter-spacing:.5px; margin:0 0 8px; color:var(--navy);}
+.sub{font-size:14px; color:var(--navy); margin-bottom:22px; line-height:1.6;}
+.field{margin-bottom:16px; text-align:left;}
+label{display:block; font-size:12px; font-weight:700; text-transform:uppercase; color:var(--navy); margin-bottom:6px; letter-spacing:.05em;}
+input[type=text], input[type=email]{width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--border); font-family:'Montserrat'; font-size:16px; background:var(--white); color:var(--navy);}
+input:focus, textarea:focus{outline:2px solid var(--rose); outline-offset:1px;}
+.primary-btn{background:var(--navy); color:var(--white); border:2px solid transparent; padding:13px 28px; border-radius:999px; font-family:'Montserrat'; font-weight:800; text-transform:uppercase; font-size:13px; letter-spacing:.5px; cursor:pointer; margin:8px 6px 0;}
+.primary-btn:hover{opacity:.88;}
+.primary-btn:disabled{opacity:.4; cursor:not-allowed;}
+.primary-btn.ghost{background:transparent; border:2px solid var(--navy); color:var(--navy);}
+.howto{background:var(--warm); border-radius:12px; padding:14px 16px; text-align:left; font-size:13px; line-height:1.6; margin:0 0 22px;}
+.howto b{font-weight:800;}
+
+.progress-bar{background:var(--white); border:1.5px solid var(--border); border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+.progress-label{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; white-space:nowrap;}
+.progress-track{flex:1; height:5px; background:var(--warm); border-radius:3px; overflow:hidden;}
+.progress-fill{height:100%; background:var(--rose); border-radius:3px; transition:width .4s ease;}
+.progress-steps{font-size:11px; color:var(--muted); white-space:nowrap;}
+.chat{display:flex; flex-direction:column; gap:14px; margin-bottom:14px; text-align:left;}
+.bubble{max-width:88%; padding:14px 16px; border-radius:16px; font-size:15px; line-height:1.6; text-align:left; white-space:pre-wrap; overflow-wrap:anywhere;}
+.bubble.assistant{align-self:flex-start; background:var(--warm); color:var(--navy); border-left:3px solid var(--rose); border-bottom-left-radius:4px;}
+.bubble.assistant strong{font-weight:800;}
+.bubble.user{align-self:flex-end; background:var(--navy); color:#fff; border-bottom-right-radius:4px;}
+.bubble.user a{color:#fff; text-decoration:underline;}
+.bubble.wide{max-width:100%; width:100%;}
+.input-row{display:flex; gap:8px; position:sticky; bottom:0; background:var(--white); padding:8px 0;}
+.input-row textarea{flex:1; padding:12px 14px; border-radius:14px; border:1.5px solid var(--border); font-family:'Montserrat'; font-size:16px; resize:none; min-height:46px; max-height:140px; background:var(--white); color:var(--navy);}
+.send-btn{background:var(--navy); color:var(--white); border:none; width:46px; height:46px; border-radius:50%; font-size:18px; cursor:pointer; flex-shrink:0;}
+.send-btn:disabled, .attach-btn:disabled{opacity:.4; cursor:not-allowed;}
+.attach-btn{background:var(--white); border:1.5px solid var(--border); color:var(--navy); width:46px; height:46px; border-radius:50%; font-size:17px; cursor:pointer; flex-shrink:0;}
+.attach-btn:hover{border-color:var(--rose);}
+.typing{font-size:13px; color:var(--muted); font-style:italic; padding-left:4px; min-height:18px; margin-bottom:6px; text-align:left;}
+.dot-loader{display:inline-flex; gap:4px; align-items:center;}
+.dot-loader span{width:6px; height:6px; background:var(--rose); border-radius:50%; animation:blink 1.2s infinite;}
+.dot-loader span:nth-child(2){animation-delay:.2s;}
+.dot-loader span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
+.error{color:#9C3B32; font-size:13px; margin-top:8px; font-style:normal;}
+
+.section-badge{display:inline-block; background:var(--rose); color:var(--navy); border-radius:100px; padding:3px 10px; font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; margin-bottom:8px;}
+.summary-box{background:var(--white); border:1px solid var(--rose); border-radius:10px; padding:16px 18px; font-size:14px; line-height:1.6; max-height:440px; overflow-y:auto; margin-top:6px; white-space:normal;}
+.sum-title{font-weight:900; text-transform:uppercase; font-size:16px; letter-spacing:.03em;}
+.sum-sub{font-size:13px; color:var(--muted); margin-bottom:4px;}
+.sum-head{font-weight:800; text-transform:uppercase; font-size:12.5px; letter-spacing:.07em; margin:18px 0 6px; padding-bottom:4px; border-bottom:2px solid var(--rose);}
+.sum-quote{font-size:16px; font-weight:500; font-style:italic; background:var(--warm); border-left:3px solid var(--rose); border-radius:6px; padding:10px 12px; margin:4px 0 8px;}
+.sum-row{margin:0 0 6px;}
+.sum-label{color:var(--slate); font-weight:700;}
+.sum-p{margin:0 0 6px;}
+.old-summary{font-size:13px; color:var(--muted);}
+.old-summary summary{cursor:pointer; font-weight:700;}
+
+.save-row{margin-top:12px;}
+.save-label{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:6px;}
+.save-btns{display:flex; gap:8px; flex-wrap:wrap;}
+.save-btn{background:var(--white); border:1.5px solid var(--navy); color:var(--navy); font-family:'Montserrat'; font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:.03em; padding:10px 16px; border-radius:999px; cursor:pointer;}
+.save-btn:hover{background:var(--warm);}
+.save-btn:disabled{opacity:.5; cursor:wait;}
+.next-card{background:var(--navy); color:var(--white); border-radius:12px; padding:18px; margin-top:18px; text-align:left; white-space:normal;}
+.next-kicker{font-weight:900; text-transform:uppercase; font-size:14px; letter-spacing:.05em; color:var(--rose); margin-bottom:10px;}
+.next-done{font-size:14px; margin:0 0 4px;}
+.next-sub{font-size:13px; line-height:1.55; opacity:.9; margin-top:12px;}
+.update-btn{display:block; width:100%; text-align:center; background:var(--rose); color:var(--navy); border:none; font-family:'Montserrat'; font-weight:800; text-transform:uppercase; letter-spacing:.03em; font-size:13px; padding:13px 12px; border-radius:999px; margin-top:14px; cursor:pointer;}
+.update-btn:hover{opacity:.9;}
+.update-banner{background:var(--warm); border-left:3px solid var(--rose); border-radius:12px; padding:12px 14px; font-size:13px; line-height:1.5; text-align:left; margin-bottom:10px;}
+.update-banner a{color:var(--navy); font-weight:700; cursor:pointer;}
+
+.admin-list{background:var(--white); border-radius:12px; padding:16px; margin-bottom:12px; cursor:pointer; border:1.5px solid var(--border); text-align:left;}
+.admin-list:hover{border-color:var(--navy);}
+.recap-box{background:var(--white); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:16px; text-align:left;}
+.small{font-size:12px; color:var(--muted);}
+.notes-box{background:var(--warm); border-radius:10px; padding:14px 16px; font-size:13px; line-height:1.6; white-space:pre-wrap; text-align:left; margin-bottom:14px;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="masthead">
+    <img src="hbm-logo-white.png" alt="Haven Built Media" onerror="this.style.display='none'">
+    <div><div class="mast-kicker">Haven Built Media</div><div class="mast-title">Legacy Lucy</div></div>
+  </div>
+  <div class="card"><div class="inner" id="app"></div></div>
+</div>
+<script>
+const CHAT_STREAM = "/api/chat"; // edge function — streams replies so the long summary turn can't time out
+const ASSISTANT_FN = "/.netlify/functions/assistant";
+const STORE_FN = "/.netlify/functions/store";
+const UPLOAD_FN = "/.netlify/functions/upload";
+const DOWNLOAD_FN = "/.netlify/functions/download";
+const PDF_FN = "/.netlify/functions/pdf";
+const SUMMARY_START = "---BEGIN SUMMARY---", SUMMARY_END = "---END SUMMARY---";
+const NOTES_START = "---BEGIN TEAM NOTES---", NOTES_END = "---END TEAM NOTES---";
+
+const STEPS = [
+  { label: "Getting started", pct: 2 },
+  { label: "Quick context", pct: 8 },
+  { label: "The beginning", pct: 18 },
+  { label: "The decision", pct: 28 },
+  { label: "The impact", pct: 38 },
+  { label: "The audience", pct: 48 },
+  { label: "The takeaway", pct: 58 },
+  { label: "Proof points", pct: 68 },
+  { label: "On camera", pct: 78 },
+  { label: "Timing", pct: 86 },
+  { label: "Anything else", pct: 93 },
+  { label: "Your story summary", pct: 100 }
+];
+// The bot opens each section with a hidden [[STEP:KEY]] marker; this maps it to a STEPS index.
+const STEP_KEYS = { CONTEXT:1, ORIGIN:2, DECISION:3, IMPACT:4, AUDIENCE:5, TAKEAWAY:6, PROOF:7, VISUALS:8, SCHEDULING:9, ANYTHING:10, SUMMARY:11 };
+
+let state = { clientKey:null, name:"", email:"", accessCode:"", history:[], step:0, submitted:false, updatesLeft:null, updating:false, notice:"", busy:false };
+let config = { codeRequired:false, maxUpdates:3 };
+let adminCode = null;
+const app = document.getElementById('app');
+
+function escapeHtml(str){ return String(str==null?'':str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------- remember who they are on this browser, so reopening the page picks up where they left off ---------- */
+const LS_KEY = "hbm_lucy_identity";
+function rememberIdentity(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({ name:state.name, email:state.email, accessCode:state.accessCode })); }catch(e){} }
+function recallIdentity(){ try{ const v = JSON.parse(localStorage.getItem(LS_KEY) || "null"); return v && v.email ? v : null; }catch(e){ return null; } }
+function forgetIdentity(){ try{ localStorage.removeItem(LS_KEY); }catch(e){} location.reload(); }
+
+async function api(url, payload, opts){
+  const res = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload), ...(opts||{}) });
+  return res.json();
+}
+
+async function saveProgress(){
+  try{
+    const payload = { action:"save", key:state.clientKey, accessCode:state.accessCode, data:{
+      name:state.name, email:state.email, history:state.history, step:state.step
+    }};
+    // keepalive lets a save finish if the tab closes right after, but browsers reject keepalive
+    // bodies over 64KB, so long sessions (the summary turn especially) skip it.
+    const keepalive = JSON.stringify(payload).length < 60000;
+    const r = await api(STORE_FN, payload, { keepalive });
+    if(r && typeof r.updatesLeft === 'number') state.updatesLeft = r.updatesLeft;
+    if(r && r.submitted) state.submitted = true;
+    return r;
+  }catch(e){ console.error("save failed", e); return null; }
+}
+
+/* ---------- landing ---------- */
+function renderLanding(){
+  app.innerHTML = `
+    <h1>Let's turn your story into your Legacy</h1>
+    <div class="sub">A short, guided conversation to gather the heart of your brand story before your shoot. No writing skills needed, and no wrong answers.</div>
+    <div class="howto"><b>How this works:</b> about 15–20 minutes, one question at a time. You can pause and come back with the same email anytime. At the end you'll get your Legacy Story Summary as a PDF, and the Haven Built team gets a copy too.</div>
+    <div class="field"><label for="nameInput">Your name</label><input type="text" id="nameInput" autocomplete="name" placeholder="First and last name"/></div>
+    <div class="field"><label for="emailInput">Email</label><input type="email" id="emailInput" autocomplete="email" placeholder="you@youragency.com"/></div>
+    ${config.codeRequired ? `<div class="field"><label for="codeInput">Shoot code</label><input type="text" id="codeInput" autocomplete="off" placeholder="From your Haven Built welcome email"/></div>` : ``}
+    <button class="primary-btn" id="goBtn">Let's begin</button>
+    <div class="error" id="idErr"></div>`;
+  document.getElementById('goBtn').onclick = startSession;
+  app.querySelectorAll('input').forEach(i => i.addEventListener('keydown', e=>{ if(e.key==='Enter') startSession(); }));
+}
+
+async function startSession(){
+  const name = document.getElementById('nameInput').value.trim();
+  const rawEmail = document.getElementById('emailInput').value.trim();
+  const codeEl = document.getElementById('codeInput');
+  const code = codeEl ? codeEl.value.trim() : "";
+  const errEl = document.getElementById('idErr');
+  errEl.textContent = "";
+  // Admin: the admin code typed into the email field opens the sessions list instead.
+  if(rawEmail && !rawEmail.includes('@')){
+    try{
+      const r = await api(STORE_FN, { action:"list", adminCode: rawEmail });
+      if(r && r.sessions){ adminCode = rawEmail; renderAdmin(r.sessions); return; }
+    }catch(e){ console.error("admin check failed (non-fatal)", e); }
+  }
+  if(!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)){ errEl.textContent = "I just need your name and a valid email so I can save your spot."; return; }
+  if(config.codeRequired && !code){ errEl.textContent = "Add the shoot code from your welcome email."; return; }
+  await enterSession(name, rawEmail.toLowerCase(), code);
+}
+
+async function enterSession(name, email, code){
+  state.name = name; state.email = email; state.clientKey = email; state.accessCode = code || "";
+  let existing = null;
+  try{
+    const r = await api(STORE_FN, { action:"load", key:email, accessCode:state.accessCode });
+    if(r && r.error === "Unauthorized"){ forgetIdentityQuiet(); renderLanding(); document.getElementById('idErr').textContent = "That shoot code doesn't match. Check your welcome email."; return; }
+    existing = r && r.data;
+    if(r && typeof r.updatesLeft === 'number') state.updatesLeft = r.updatesLeft;
+  }catch(e){ console.error("load existing session failed (non-fatal)", e); }
+  rememberIdentity();
+  if(existing && existing.history && existing.history.length){
+    state.history = existing.history;
+    state.step = existing.step || 0;
+    state.submitted = !!existing.submitted;
+    state.name = existing.name || name;
+    renderChat();
+    // A session that stopped before Lucy's first reply (e.g. a dropped connection) picks back up.
+    if(state.history[state.history.length-1].role === 'user' && !state.submitted) sendTurn();
+    return;
+  }
+  // New session: the first turn is a hidden context note; Lucy's reply is the welcome + first question.
+  state.history = [{ role:"user", hidden:true, content:`[CONTEXT: Name entered on the landing page: ${name}. Email entered: ${email}.] Please begin the session.` }];
+  state.step = 0; state.submitted = false;
+  renderChat();
+  sendTurn();
+}
+function forgetIdentityQuiet(){ try{ localStorage.removeItem(LS_KEY); }catch(e){} }
+
+/* ---------- hidden markers + summary parsing ---------- */
+const STEP_MARKER_RE = /\[\[\s*STEP\s*:\s*([A-Za-z]+)\s*\]\]/g;
+function readStep(text){
+  let step = -1, m; STEP_MARKER_RE.lastIndex = 0;
+  while((m = STEP_MARKER_RE.exec(text))){ const s = STEP_KEYS[m[1].toUpperCase()]; if(s != null && s > step) step = s; }
+  return step;
+}
+function stripMarkers(text){ return String(text == null ? '' : text).replace(STEP_MARKER_RE, '').replace(/\n{3,}/g, '\n\n').trim(); }
+function hasSummary(t){ return String(t||'').includes(SUMMARY_START) && String(t||'').includes(SUMMARY_END); }
+
+// Splits a Lucy message into the text before the summary and the summary itself. The team notes
+// that follow the summary are for the Haven Built team only and never shown to the client.
+function extractSummary(content){
+  const i = content.indexOf(SUMMARY_START);
+  if(i === -1) return null;
+  const j = content.indexOf(SUMMARY_END, i);
+  return { before: content.slice(0, i).trim(), summaryRaw: content.slice(i + SUMMARY_START.length, j !== -1 ? j : undefined).replace(/\*\*/g,'').trim() };
+}
+function extractNotes(content){
+  const i = content.indexOf(NOTES_START);
+  if(i === -1) return null;
+  const j = content.indexOf(NOTES_END, i);
+  return content.slice(i + NOTES_START.length, j !== -1 ? j : undefined).trim();
+}
+function stripNotes(content){
+  const i = content.indexOf(NOTES_START);
+  return i === -1 ? content : content.slice(0, i);
+}
+
+function summaryToHTML(raw){
+  return String(raw||'').split('\n').map(line => {
+    const t = line.trim();
+    if(!t) return '';
+    if(/^LEGACY STORY SUMMARY$/i.test(t)) return '<div class="sum-title">'+escapeHtml(t)+'</div>';
+    if(t.includes('|') && !t.includes(':')) return '<div class="sum-sub">'+escapeHtml(t)+'</div>';
+    if(t === t.toUpperCase() && /[A-Z]/.test(t) && !t.includes(':') && !/^["“]/.test(t) && t.length < 50) return '<div class="sum-head">'+escapeHtml(t)+'</div>';
+    if(/^["“]/.test(t)) return '<div class="sum-quote">'+escapeHtml(t)+'</div>';
+    const m = t.match(/^([^:]{2,70}):\s*(.*)$/);
+    if(m) return '<div class="sum-row"><span class="sum-label">'+escapeHtml(m[1])+':</span> '+escapeHtml(m[2])+'</div>';
+    return '<div class="sum-p">'+escapeHtml(t)+'</div>';
+  }).join('');
+}
+
+// **bold** questions render as real bold; everything else stays plain text.
+function mdLiteHTML(str){ return escapeHtml(str).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); }
+
+/* ---------- PDF ---------- */
+function pdfName(){ return ((state.name || 'Legacy').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-') || 'Legacy') + '-Legacy-Story-Summary.pdf'; }
+async function saveSummaryPDF(raw, btn){
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Making your PDF…';
+  try{
+    const res = await fetch(PDF_FN, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ summary: raw, name: state.name }) });
+    if(!res.ok || !(res.headers.get("Content-Type")||"").includes("pdf")) throw new Error("pdf " + res.status);
+    const url = URL.createObjectURL(await res.blob());
+    const a = document.createElement('a'); a.href = url; a.download = pdfName();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    btn.textContent = 'Downloaded ✓'; setTimeout(()=>{ btn.textContent = label; }, 2500);
+  }catch(e){
+    console.warn("PDF download failed, using print view instead", e);
+    btn.textContent = label;
+    printSummary(raw);
+  }finally{ btn.disabled = false; }
+}
+// Fallback: the browser's own print → "Save as PDF", in the same branded look.
+function printSummary(raw){
+  const doc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escapeHtml(state.name)} — Legacy Story Summary</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,700;0,800;0,900;1,500&display=swap" rel="stylesheet">
+<style>body{font-family:Montserrat,sans-serif;color:#2E4968;margin:0;padding:0 40px 40px;font-size:13px;line-height:1.55}
+.band{background:#2E4968;color:#fff;margin:0 -40px 20px;padding:28px 40px}.kicker{color:#DBB3B3;font-weight:800;font-size:10px;letter-spacing:.16em;text-transform:uppercase}.who{font-weight:900;font-size:24px;text-transform:uppercase}
+.sum-title{display:none}.sum-sub{color:#8A99AB;margin-bottom:6px}.sum-head{font-weight:800;text-transform:uppercase;letter-spacing:.07em;font-size:12px;margin:16px 0 6px;padding-bottom:3px;border-bottom:2px solid #DBB3B3}
+.sum-quote{font-style:italic;font-size:15px;background:#F3F1F0;border-left:3px solid #DBB3B3;padding:8px 12px;margin:4px 0 8px}.sum-label{color:#8A99AB;font-weight:700}.sum-row,.sum-p{margin:0 0 5px}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body>
+<div class="band"><div class="kicker">Haven Built Media · Legacy Story Summary</div><div class="who">${escapeHtml(state.name)}</div></div>${summaryToHTML(raw)}</body></html>`;
+  const frame = document.createElement('iframe');
+  frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
+  document.body.appendChild(frame);
+  const fdoc = frame.contentWindow.document; fdoc.open(); fdoc.write(doc); fdoc.close();
+  const go = () => { try{ frame.contentWindow.focus(); frame.contentWindow.print(); }catch(e){ console.error(e); } setTimeout(()=>frame.remove(), 60000); };
+  if(fdoc.fonts && fdoc.fonts.ready){ Promise.race([fdoc.fonts.ready, new Promise(r=>setTimeout(r,1500))]).then(go); } else { setTimeout(go, 800); }
+}
+
+/* ---------- chat bubbles ---------- */
+function buildSaveRow(summaryRaw){
+  const wrap = document.createElement('div'); wrap.className = 'save-row';
+  wrap.innerHTML = `<div class="save-label">Keep your summary</div>
+    <div class="save-btns"><button class="save-btn" type="button" data-act="pdf">⬇ Download PDF</button><button class="save-btn" type="button" data-act="copy">Copy text</button></div>`;
+  const pdfBtn = wrap.querySelector('[data-act="pdf"]');
+  pdfBtn.onclick = () => saveSummaryPDF(summaryRaw, pdfBtn);
+  const copyBtn = wrap.querySelector('[data-act="copy"]');
+  copyBtn.onclick = () => navigator.clipboard.writeText(summaryRaw).then(()=>{ copyBtn.textContent='Copied ✓'; setTimeout(()=>copyBtn.textContent='Copy text', 2500); });
+  return wrap;
+}
+
+function buildNextSteps(){
+  const card = document.createElement('div'); card.className = 'next-card';
+  const left = state.updatesLeft;
+  const updatePart = state.updating ? `` : (left == null || left > 0)
+    ? `<div class="next-sub">Remembered something, or want to change a detail? You can update your summary${left != null ? ` (${left} update${left===1?'':'s'} left)` : ''}.</div><button class="update-btn" type="button" id="updateBtn">Make an update</button>`
+    : `<div class="next-sub">Your summary is locked in. Need another change? Just reply to your summary email and the team will take care of it.</div>`;
+  card.innerHTML = `
+    <div class="next-kicker">You did it. Here's what's next</div>
+    <div class="next-done">✓ Jessi and the Haven Built team have your summary</div>
+    <div class="next-done">✓ A PDF copy is on its way to your inbox</div>
+    <div class="next-sub">We'll follow up to finalize logistics, people on camera, props, and locations. No script, no memorizing. Just show up as you.</div>
+    ${updatePart}`;
+  const btn = card.querySelector('#updateBtn');
+  if(btn) btn.onclick = startUpdate;
+  return card;
+}
+
+function buildBotBubble(content, opts){
+  opts = opts || {};
+  content = stripMarkers(stripNotes(content));
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble assistant';
+  const parsed = extractSummary(content);
+  if(!parsed){ bubble.innerHTML = mdLiteHTML(content); return bubble; }
+  bubble.classList.add('wide');
+  bubble.style.whiteSpace = 'normal';
+  if(opts.superseded){
+    bubble.innerHTML = `<details class="old-summary"><summary>Earlier version of your summary (replaced below)</summary><div class="summary-box">${summaryToHTML(parsed.summaryRaw)}</div></details>`;
+    return bubble;
+  }
+  if(parsed.before){ const p = document.createElement('div'); p.style.cssText = 'margin-bottom:12px;white-space:pre-wrap;'; p.innerHTML = mdLiteHTML(parsed.before); bubble.appendChild(p); }
+  const badge = document.createElement('div'); badge.className = 'section-badge'; badge.textContent = 'Your Legacy Story Summary';
+  bubble.appendChild(badge);
+  const box = document.createElement('div'); box.className = 'summary-box'; box.innerHTML = summaryToHTML(parsed.summaryRaw);
+  bubble.appendChild(box);
+  bubble.appendChild(buildSaveRow(parsed.summaryRaw));
+  bubble.appendChild(buildNextSteps());
+  return bubble;
+}
+
+function renderChat(){
+  const st = STEPS[state.step] || STEPS[0];
+  const inputOpen = !state.submitted || state.updating;
+  app.innerHTML = `
+    <div class="progress-bar">
+      <span class="progress-label">${state.submitted ? 'Your story summary' : st.label}</span>
+      <div class="progress-track"><div class="progress-fill" style="width:${state.submitted ? 100 : st.pct}%"></div></div>
+      <span class="progress-steps">${!state.submitted && state.step>0 ? state.step+" of "+(STEPS.length-1) : ""}</span>
+    </div>
+    <div style="text-align:right; margin:-10px 0 12px;"><span id="notYouLink" style="font-size:11px; color:var(--muted); cursor:pointer; text-decoration:underline;">Not ${escapeHtml(state.name||'you')}? Switch</span></div>
+    <div class="chat" id="chatLog"></div>
+    <div class="typing" id="typingRow"></div>
+    ${state.updating ? `<div class="update-banner">Tell Lucy what you'd like to change in your summary, in your own words. <a id="cancelUpdate">Cancel</a></div>` : ``}
+    <div class="input-row" id="inputRow" style="${inputOpen ? '' : 'display:none;'}">
+      <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf,.heic">
+      ${state.updating ? `` : `<button class="attach-btn" id="attachBtn" type="button" ${state.busy?'disabled':''} title="Share a photo — a space you're considering, your logo, inspiration" aria-label="Attach a file">📎</button>`}
+      <textarea id="userInput" placeholder="${state.updating ? 'What should change?' : 'Type your answer here…'}" rows="1" ${state.busy?'disabled':''}></textarea>
+      <button class="send-btn" id="sendBtn" ${state.busy?'disabled':''} aria-label="Send">&#8593;</button>
+    </div>`;
+  document.getElementById('notYouLink').onclick = forgetIdentity;
+  const cancel = document.getElementById('cancelUpdate');
+  if(cancel) cancel.onclick = () => { if(!state.busy){ state.updating = false; renderChat(); } };
+  const attachBtn = document.getElementById('attachBtn'), fileInput = document.getElementById('fileInput');
+  if(attachBtn){ attachBtn.onclick = () => fileInput.click(); fileInput.onchange = handleFileSelect; }
+
+  const log = document.getElementById('chatLog');
+  let lastSummaryIdx = -1;
+  state.history.forEach((m, i) => { if(m.role === 'assistant' && hasSummary(m.content)) lastSummaryIdx = i; });
+  state.history.forEach((m, i) => {
+    if(m.hidden) return;
+    if(m.role === 'assistant'){ log.appendChild(buildBotBubble(m.content, { superseded: hasSummary(m.content) && i !== lastSummaryIdx })); return; }
+    const div = document.createElement('div'); div.className = 'bubble user';
+    if(m.attachment){ div.innerHTML = `📎 <a href="${DOWNLOAD_FN}?id=${encodeURIComponent(m.attachment.id)}" target="_blank" rel="noopener">${escapeHtml(m.attachment.filename)}</a>`; }
+    else div.textContent = m.display || m.content;
+    log.appendChild(div);
+  });
+  const typing = document.getElementById('typingRow');
+  if(state.busy) typing.innerHTML = '<div class="dot-loader"><span></span><span></span><span></span></div>';
+  else if(state.notice) typing.innerHTML = '<span class="error">' + escapeHtml(state.notice) + '</span>';
+  const ta = document.getElementById('userInput'), sendBtn = document.getElementById('sendBtn');
+  if(ta && inputOpen){
+    ta.addEventListener('input', ()=>{ ta.style.height='46px'; ta.style.height=Math.min(ta.scrollHeight,140)+'px'; });
+    ta.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); } });
+    sendBtn.onclick = handleSend;
+    if(!state.busy) ta.focus();
+  }
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+function startUpdate(){
+  if(state.busy) return;
+  state.updating = true; state.notice = "";
+  renderChat();
+}
+
+/* ---------- talking to Lucy ---------- */
+class LockedError extends Error { constructor(d){ super(d.message || "This session is locked."); this.locked = d; } }
+
+// Streams the reply from the edge function and shows it live as it's written. If the stream can't
+// start at all (edge function missing), falls back to the classic function. A 403 from the gate is
+// final — it is never retried through the fallback.
+async function callLucy(){
+  const body = { key: state.clientKey, accessCode: state.accessCode, messages: state.history };
+  let res;
+  try{ res = await fetch(CHAT_STREAM, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) }); }catch(e){ res = null; }
+  if(res && res.status === 403){ throw new LockedError(await res.json().catch(()=>({}))); }
+  const streaming = res && res.ok && (res.headers.get("Content-Type")||"").includes("ndjson") && res.body;
+  if(!streaming){
+    if(res) console.warn("stream unavailable (" + res.status + "), using classic function");
+    const fres = await fetch(ASSISTANT_FN, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
+    const r = await fres.json();
+    if(r.locked) throw new LockedError(r);
+    if(r.error) throw new Error(r.error);
+    return r;
+  }
+  const reader = res.body.getReader(), dec = new TextDecoder();
+  let buf = "", full = "", result = null;
+  const IDLE_MS = 30000;
+  for(;;){
+    let step, timer;
+    try{
+      step = await Promise.race([ reader.read(), new Promise((_, rej) => { timer = setTimeout(() => rej(new Error("idle")), IDLE_MS); }) ]);
+      clearTimeout(timer);
+    }catch(e){
+      clearTimeout(timer);
+      try{ reader.cancel(); }catch(_){}
+      // Keep a reply that fully arrived; a half-written summary is retried instead.
+      const t = full.trim();
+      if(t && (!t.includes(SUMMARY_START) || t.includes(SUMMARY_END))) return { reply: t };
+      throw new Error(e.message === "idle" ? "The reply stalled. Try sending that again." : e.message);
+    }
+    const { value, done } = step;
+    if(done) break;
+    buf += dec.decode(value, { stream:true });
+    let nl;
+    while((nl = buf.indexOf("\n")) !== -1){
+      const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+      if(!line) continue;
+      let ev; try{ ev = JSON.parse(line); }catch(e){ continue; }
+      if(ev.error) throw new Error(ev.error);
+      if(typeof ev.t === "string"){ full += ev.t; showLiveReply(full); }
+      if(ev.done) result = { reply: full.trim(), mode: ev.mode, updatesLeft: ev.updatesLeft };
+    }
+  }
+  if(!result) throw new Error("The reply got cut off before it finished. Try sending that again.");
+  return result;
+}
+
+// Live preview while a reply streams in. Once the summary starts, show a placeholder instead of the
+// raw text — the finished message re-renders with the proper summary box.
+function showLiveReply(text){
+  const row = document.getElementById('typingRow');
+  if(!row) return;
+  let shown = text.replace(/\[\[[^\]]*$/, '');
+  const cut = shown.indexOf('---BEGIN');
+  const writingSummary = cut !== -1;
+  if(writingSummary) shown = shown.slice(0, cut);
+  shown = stripMarkers(shown);
+  if(!shown && !writingSummary) return;
+  row.innerHTML = '';
+  if(shown) row.appendChild(buildBotBubble(shown));
+  if(writingSummary){
+    const note = document.createElement('div');
+    note.style.cssText = 'margin-top:8px;';
+    note.innerHTML = 'Pulling your story summary together <span class="dot-loader"><span></span><span></span><span></span></span>';
+    row.appendChild(note);
+  }
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+async function sendTurn(){
+  state.busy = true; state.notice = "";
+  renderChat();
+  try{
+    const r = await callLucy();
+    state.history.push({ role:"assistant", content:r.reply });
+    const step = readStep(r.reply);
+    if(step > state.step) state.step = step;
+    if(hasSummary(r.reply)){ state.submitted = true; state.updating = false; state.step = STEPS.length - 1; }
+    state.busy = false;
+    renderChat();
+    await saveProgress();
+    renderChat();
+  }catch(e){
+    state.busy = false;
+    if(e.locked){
+      state.updating = false;
+      if(typeof e.locked.updatesLeft === 'number') state.updatesLeft = e.locked.updatesLeft;
+      // Drop the message that was refused so the record matches what Lucy actually saw.
+      if(state.history.length && state.history[state.history.length-1].role === 'user' && !state.history[state.history.length-1].hidden) state.history.pop();
+      state.notice = e.locked.message || "This session is locked.";
+    } else {
+      state.notice = e.message && e.message.length < 160 ? e.message : "Something went sideways on my end. Try sending that again.";
+    }
+    renderChat();
+  }
+}
+
+async function handleSend(){
+  if(state.busy) return;
+  const ta = document.getElementById('userInput');
+  const text = ta.value.trim();
+  if(!text) return;
+  if(state.updating) state.history.push({ role:"user", content:"[UPDATE REQUEST] " + text, display:text });
+  else state.history.push({ role:"user", content:text });
+  await saveProgress();
+  sendTurn();
+}
+
+/* ---------- paperclip: photos of a space, logos, inspiration ---------- */
+function handleFileSelect(e){
+  const file = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if(!file || state.busy) return;
+  if(file.size > 4 * 1024 * 1024){ state.notice = "That file is over 4MB. Try a smaller version."; renderChat(); return; }
+  const reader = new FileReader();
+  reader.onload = () => uploadFile(file.name, file.type, String(reader.result).split(',')[1] || '');
+  reader.onerror = () => { state.notice = "Couldn't read that file. Try again."; renderChat(); };
+  reader.readAsDataURL(file);
+}
+async function uploadFile(filename, contentType, dataBase64){
+  state.busy = true; renderChat();
+  document.getElementById('typingRow').innerHTML = '<span>Uploading ' + escapeHtml(filename) + '…</span>';
+  try{
+    const res = await api(UPLOAD_FN, { sessionKey: state.clientKey, filename, contentType, dataBase64 });
+    if(res.error) throw new Error(res.error);
+    state.history.push({ role:"user", content:`[ATTACHMENT: ${filename}] I just uploaded a file called "${filename}". You can't see it, but it's saved for the team.`, display:filename, attachment:{ id:res.id, filename, contentType } });
+  }catch(e){
+    state.busy = false; state.notice = "Upload failed: " + e.message; renderChat(); return;
+  }
+  await saveProgress(); // the file is saved right away, even if the reply below fails
+  sendTurn();
+}
+
+/* ---------- Jessi-only admin (unlocked by entering the admin code in the email field) ---------- */
+function emailStatusHTML(d){
+  const e = d.lastEmail;
+  if(!e) return '';
+  const part = (label, r) => r && r.ok ? `${label} ✓` : `<span style="color:#9C3B32;font-weight:700;">${label} ✗</span>`;
+  const why = [e.alert, e.client].filter(r => r && !r.ok && r.why).map(r => escapeHtml(r.why)).join(' · ');
+  return `<div class="small">📧 ${e.resent ? 'Resent: ' : ''}${part('Your alert', e.alert)} &middot; ${part('Client copy', e.client)}${why ? `<br><span style="color:#9C3B32;">${why}</span>` : ``}</div>`;
+}
+function latestFrom(d){
+  for(let i=(d.history||[]).length-1; i>=0; i--){
+    const m = d.history[i];
+    if(m.role==='assistant' && hasSummary(m.content)){ const p = extractSummary(stripMarkers(m.content)); return { summary: p && p.summaryRaw, notes: extractNotes(m.content) }; }
+  }
+  return { summary:null, notes:null };
+}
+
+function renderAdmin(sessions){
+  app.innerHTML = `<h1>Legacy Lucy sessions</h1><div class="sub">${sessions.length} session${sessions.length===1?'':'s'}. Tap one to read it.</div><div id="sessList"></div><button class="primary-btn ghost" id="exitBtn">Exit</button>`;
+  const list = document.getElementById('sessList');
+  if(!sessions.length) list.innerHTML = '<div class="small">Nothing yet. Sessions show up here as clients go through it.</div>';
+  sessions.forEach(d => {
+    const div = document.createElement('div'); div.className = 'admin-list';
+    div.innerHTML = `<div style="font-weight:800;text-transform:uppercase;font-size:14px;">${escapeHtml(d.name||'Unknown')}${d.agency ? ` <span class="small" style="text-transform:none;">· ${escapeHtml(d.agency)}</span>` : ''}</div>
+      <div class="small">${escapeHtml(d.email||'')} &middot; ${d.submitted ? 'Completed' : 'In progress'}${d.submitted ? ` &middot; ${d.updatesUsed||0} update${d.updatesUsed===1?'':'s'} used, ${d.updatesLeft} left` : ''}</div>
+      ${d.takeaway ? `<div style="font-size:13px;font-style:italic;margin:4px 0;">“${escapeHtml(d.takeaway)}”</div>` : ``}
+      ${emailStatusHTML(d)}
+      <div class="small">${d.updatedAt ? new Date(d.updatedAt).toLocaleString() : ''}</div>`;
+    div.onclick = () => renderAdminDetail(d, sessions);
+    list.appendChild(div);
+  });
+  document.getElementById('exitBtn').onclick = () => location.reload();
+}
+
+function renderAdminDetail(d, sessions){
+  const { summary, notes } = latestFrom(d);
+  const visible = (d.history||[]).filter(m => !m.hidden);
+  const convo = visible.map(m => `${m.role==='assistant'?'LUCY':(d.name||'CLIENT').toUpperCase()}: ${stripMarkers(m.display || m.content)}`).join('\n\n');
+  app.innerHTML = `
+    <h1>${escapeHtml(d.name||'Unknown')}</h1>
+    <div class="sub">${escapeHtml(d.agency || '')}${d.agency ? ' &middot; ' : ''}${escapeHtml(d.email||'')} &middot; ${d.submitted?'Completed':'In progress'}</div>
+    <div style="margin-bottom:12px;">
+      ${summary ? `<button class="primary-btn" id="copySummaryBtn">Copy summary</button>` : ``}
+      ${notes ? `<button class="primary-btn ghost" id="copyNotesBtn">Copy team notes</button>` : ``}
+      <button class="primary-btn ghost" id="copyConvo">Copy conversation</button>
+      ${summary ? `<button class="primary-btn ghost" id="resendBtn">Resend emails</button>` : ``}
+      ${d.submitted ? `<button class="primary-btn ghost" id="grantBtn">Give 1 more update</button>` : ``}
+    </div>
+    <div id="adminStatus" style="margin-bottom:12px;">${emailStatusHTML(d)}${d.submitted ? `<div class="small">Updates left: ${d.updatesLeft}</div>` : ''}</div>
+    ${summary ? `<div class="summary-box" style="text-align:left;margin-bottom:14px;">${summaryToHTML(summary)}</div>` : ``}
+    ${notes ? `<div class="save-label" style="text-align:left;">Team notes (never shown to the client)</div><div class="notes-box">${escapeHtml(notes)}</div>` : ``}
+    <div class="recap-box chat" style="max-height:480px; overflow:auto;">${visible.map(m => {
+      if(m.attachment) return `<div class="bubble user">📎 <a href="${DOWNLOAD_FN}?id=${encodeURIComponent(m.attachment.id)}" target="_blank" rel="noopener">${escapeHtml(m.attachment.filename)}</a></div>`;
+      const text = m.role==='assistant' ? stripMarkers(stripNotes(m.content)).replace(/---BEGIN SUMMARY---[\s\S]*?(---END SUMMARY---|$)/, '(story summary — shown above)') : (m.display || m.content);
+      return `<div class="bubble ${m.role==='assistant'?'assistant':'user'}">${m.role==='assistant' ? mdLiteHTML(text) : escapeHtml(text)}</div>`;
+    }).join('')}</div>
+    <button class="primary-btn ghost" id="backBtn">Back to list</button>`;
+  const copy = (id, text) => { const b = document.getElementById(id); if(b) b.onclick = () => { navigator.clipboard.writeText(text); b.textContent = 'Copied'; }; };
+  copy('copySummaryBtn', summary || ''); copy('copyNotesBtn', notes || ''); copy('copyConvo', convo);
+  const status = document.getElementById('adminStatus');
+  const resendBtn = document.getElementById('resendBtn');
+  if(resendBtn) resendBtn.onclick = async () => {
+    if(!confirm(`Resend the summary emails?\n\nThis sends your alert, plus the client copy to ${d.name || 'this client'} (${d.email}).`)) return;
+    resendBtn.disabled = true; resendBtn.textContent = 'Sending…';
+    try{
+      const r = await api(STORE_FN, { action:"resend", key:d.email, adminCode });
+      if(r.error) throw new Error(r.error);
+      d.lastEmail = r.lastEmail; status.innerHTML = emailStatusHTML(d); resendBtn.textContent = 'Sent ✓';
+    }catch(e){ status.innerHTML = '<div class="error">Couldn\'t resend: ' + escapeHtml(e.message) + '</div>'; resendBtn.textContent = 'Resend emails'; }
+    resendBtn.disabled = false;
+  };
+  const grantBtn = document.getElementById('grantBtn');
+  if(grantBtn) grantBtn.onclick = async () => {
+    grantBtn.disabled = true;
+    try{
+      const r = await api(STORE_FN, { action:"grant", key:d.email, adminCode });
+      if(r.error) throw new Error(r.error);
+      d.updatesLeft = r.updatesLeft; grantBtn.textContent = `Granted ✓ (${r.updatesLeft} left)`;
+    }catch(e){ status.innerHTML = '<div class="error">' + escapeHtml(e.message) + '</div>'; grantBtn.disabled = false; }
+  };
+  document.getElementById('backBtn').onclick = () => renderAdmin(sessions);
+}
+
+/* ---------- boot ---------- */
+(async () => {
+  try{ const c = await api(STORE_FN, { action:"config" }); if(c && !c.error) config = { ...config, ...c }; }catch(e){ /* defaults */ }
+  const remembered = recallIdentity();
+  if(remembered) enterSession(remembered.name, remembered.email, remembered.accessCode); else renderLanding();
+})();
+</script>
+</body>
+</html>
