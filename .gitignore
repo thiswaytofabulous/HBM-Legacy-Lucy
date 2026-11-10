@@ -1,2 +1,6 @@
 node_modules/
 .netlify/
+
+# client import files (client stories never go in this public repo)
+*-import.json
+imports/

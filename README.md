@@ -45,6 +45,15 @@ Same questions as the GPT's 9/5 expanded flow: welcome → quick context → the
 
 Type `ADMIN_CODE` into the **Email** field on the landing page. Each session shows the agency, takeaway, updates used and left, and whether both emails were delivered. Open one to copy the summary, team notes, or conversation, **Resend emails**, or **Give 1 more update**.
 
+## Bringing over a client from the old GPT
+
+A client who started in the Legacy Lucy GPT doesn't have to start over. Turn their shared GPT chat into an import file (`name`, `email`, `step`, `history`), then in the admin view tap **Import a session** and paste it. The client signs in here with that email, and Lucy welcomes them back and asks the next question.
+
+- The history uses the same format the page saves: `{ "role": "user" | "assistant", "content": "..." }`, with `"hidden": true` on notes the client shouldn't see. Lucy's questions are bolded and each section opens with its `[[STEP:...]]` marker, as in a normal session.
+- End the history with a hidden user note that starts with `[RESUME` and names the next question. When the client signs in, the page sees the conversation ends on a client turn and asks Lucy to reply, so she picks up on her own.
+- `step` is the last section they finished (1 = quick context … 6 = the takeaway), so the progress bar starts in the right place.
+- Import never overwrites a finished story and sends no emails. Client stories don't go in this repo (it's public). Keep import files out of git.
+
 ## Environment variables (set in Netlify, never in the repo)
 
 | Variable | Purpose |
