@@ -8,6 +8,8 @@
 //   - "list"  : admin-only, also used by the TWTF Live Dashboard (submission-dashboard repo).
 //   - "resend": admin-only, re-sends both emails for a finished session.
 //   - "grant" : admin-only, gives a locked client one more update.
+//   - "import": admin-only, loads an unfinished conversation from the old GPT so the client can
+//               sign in with their email and finish here.
 import { MAX_UPDATES, SUMMARY_START, SUMMARY_END, NOTES_START, NOTES_END } from "../lib/lucy.js";
 import { slug, sessionStore, readGate, writeGate, checkGate, consumeUpdate, codeOk, updatesLeft } from "../lib/gate.js";
 
@@ -348,6 +350,45 @@ export default async (req) => {
       record.lastEmail = { ...(await sendBoth(record, false, await readGate(key))), resent: true };
       await store.setJSON(slug(key), record);
       return json({ ok: true, lastEmail: record.lastEmail });
+    }
+
+    // Admin-only: load a conversation a client started somewhere else (the old Legacy Lucy GPT) so
+    // they can sign in with their email and finish here. End the imported history with a hidden
+    // user note starting "[RESUME" and Lucy picks up on her own the moment the client signs in.
+    // It never overwrites a finished story, and it sends no emails.
+    if (action === "import") {
+      if (!isAdmin(adminCode)) return json({ error: "Unauthorized" }, 401);
+      const d = data || {};
+      const email = String(d.email || "").trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "The import needs the client's email." }, 400);
+      const history = Array.isArray(d.history) ? d.history.filter(m =>
+        m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.length) : [];
+      if (history.length < 2) return json({ error: "The import needs a conversation (a history list with at least two messages)." }, 400);
+      if (latestSummary(history).summary) return json({ error: "This conversation already has a summary. Import only unfinished sessions." }, 400);
+
+      let prior = null;
+      try { prior = await store.get(slug(email), { type: "json" }); } catch (e) { /* none */ }
+      if (prior && prior.submitted) return json({ error: "That client already finished their story here, so the import was skipped." }, 409);
+
+      const step = Math.max(0, Math.min(10, Number(d.step) || 0));
+      const record = {
+        name: String(d.name || (prior && prior.name) || ""),
+        email,
+        history,
+        step,
+        submitted: false,
+        agency: String(d.agency || ""),
+        takeaway: "",
+        completedAt: null,
+        lastSummary: null,
+        lastEmail: null,
+        imported: { at: new Date().toISOString(), from: String(d.source || "Legacy Lucy GPT"), replaced: !!prior },
+        createdAt: d.createdAt || (prior && prior.createdAt) || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      await store.setJSON(slug(email), record);
+      const answers = history.filter(m => m.role === "user" && !m.hidden).length;
+      return json({ ok: true, email, answers, replaced: !!prior });
     }
 
     if (action === "grant") {
