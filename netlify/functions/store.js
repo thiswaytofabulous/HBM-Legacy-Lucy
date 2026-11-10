@@ -252,8 +252,9 @@ async function sendBoth(record, isUpdate, gateInfo) {
 }
 
 function isAdmin(code) {
-  const expected = process.env.ADMIN_CODE;
-  return !!expected && code === expected;
+  // Trimmed on both sides so a stray space or line break pasted into Netlify doesn't lock you out.
+  const expected = String(process.env.ADMIN_CODE || "").trim();
+  return !!expected && String(code || "").trim() === expected;
 }
 
 export default async (req) => {
