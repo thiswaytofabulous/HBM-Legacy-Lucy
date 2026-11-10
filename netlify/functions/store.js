@@ -329,7 +329,10 @@ export default async (req) => {
     }
 
     if (action === "list") {
-      if (!isAdmin(adminCode)) return json({ error: "Unauthorized" }, 401);
+      if (!String(process.env.ADMIN_CODE || "").trim()) {
+        return json({ error: "ADMIN_CODE isn't set on the Legacy Lucy site (or isn't available to Functions). Add it in Lucy's environment variables, then redeploy Lucy." }, 500);
+      }
+      if (!isAdmin(adminCode)) return json({ error: "Unauthorized: the code the dashboard sent doesn't match Lucy's ADMIN_CODE." }, 401);
       const { blobs } = await store.list();
       const sessions = [];
       for (const b of blobs) {
